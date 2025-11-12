@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <robot name="mega3" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:include filename="$(find megarover_description)/urdf/materials.xacro" />
-  <!-- <xacro:include filename="$(find megarover_description)/urdf/mega3_base_model.gazebo" /> -->
-
   <link name="base_footprint" />
 
   <joint name="base_joint" type="fixed">

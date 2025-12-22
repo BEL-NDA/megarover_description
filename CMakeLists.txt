@@ -12,7 +12,7 @@ install(
 )
 
 install(
-  DIRECTORY launch meshes rviz urdf params
+  DIRECTORY launch meshes rviz urdf params scripts
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -1,0 +1,20 @@
+rover_twist_relay:
+  ros__parameters:
+
+    publish_rate: 30.0
+
+    # rover selector
+    rover: mega3
+
+    # fallback
+    wheel_radius: 0.07
+    wheel_separation: 0.272
+
+    # mega3
+    mega3.wheel_radius: 0.07
+    mega3.wheel_separation: 0.272
+
+    # f120a
+    f120a.wheel_radius: 0.085
+    f120a.wheel_separation: 0.216
+

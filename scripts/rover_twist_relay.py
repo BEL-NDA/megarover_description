@@ -1,59 +1,132 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Float64MultiArray
+from rclpy.parameter import Parameter
 
 
 class RoverTwistRelay(Node):
-    """
-    /rover_twist（mouse_teleopの出力）を受け取り、
-    /diff_drive_controller/cmd_vel_unstamped へ一定周期で再送信するノード。
-    - 最新のTwistを保持して再送信（10Hz）
-    - マウス操作が止まっても停止しない
-    """
 
     def __init__(self):
         super().__init__('rover_twist_relay')
 
-        # Publisher: DiffDriveController へ送信
-        self.pub = self.create_publisher(
-            Twist, '/diff_drive_controller/cmd_vel_unstamped', 10
-        )
+        # ----------------------------
+        # Parameters
+        # ----------------------------
+        self.publish_rate = self.declare_parameter('publish_rate', 30.0).value
 
-        # Subscriber: /rover_twist から受信
+        # rover selector
+        self.rover = self.declare_parameter('rover', 'mega3').value
+
+        # fallback geometry
+        self.wheel_radius = self.declare_parameter('wheel_radius', 0.07).value
+        self.wheel_separation = self.declare_parameter('wheel_separation', 0.272).value
+
+        # per-rover parameters (fwdsrover-style)
+        self.declare_parameter('mega3.wheel_radius', 0.07)
+        self.declare_parameter('mega3.wheel_separation', 0.272)
+
+        self.declare_parameter('f120a.wheel_radius', 0.085)
+        self.declare_parameter('f120a.wheel_separation', 0.216)
+
+        self.apply_rover_parameters()
+
+        # ----------------------------
+        # Topics
+        # ----------------------------
+        self.cmd_topic = self.declare_parameter(
+            'cmd_topic', '/rover_twist'
+        ).value
+
+        self.wheel_cmd_topic = self.declare_parameter(
+            'wheel_cmd_topic',
+            '/wheel_velocity_controller/commands'
+        ).value
+
+        # ----------------------------
+        # ROS interfaces
+        # ----------------------------
         self.sub = self.create_subscription(
-            Twist, '/rover_twist', self.on_twist_received, 10
+            Twist, self.cmd_topic, self.on_twist, 10
         )
 
-        # 最新Twistを保持
+        self.pub = self.create_publisher(
+            Float64MultiArray, self.wheel_cmd_topic, 10
+        )
+
         self.last_twist = Twist()
 
-        # 10Hzで再送信（0.1秒周期）
-        self.timer = self.create_timer(0.1, self.republish_twist)
-
-        self.get_logger().info('✅ rover_twist_relay: active (10Hz resend enabled)')
-
-    def on_twist_received(self, msg):
-        """ /rover_twist を受信したとき呼ばれる """
-        self.last_twist = msg
-        self.pub.publish(msg)  # 即時反映もする
-        self.get_logger().debug(
-            f'Received twist: linear={msg.linear.x:.3f}, angular={msg.angular.z:.3f}'
+        self.timer = self.create_timer(
+            1.0 / self.publish_rate, self.on_timer
         )
 
-    def republish_twist(self):
-        """ 最後のTwistを定期的に再送信 """
-        self.pub.publish(self.last_twist)
+        self.get_logger().info(
+            f'rover_twist_relay active: rover={self.rover}, '
+            f'wheel_radius={self.wheel_radius}, '
+            f'wheel_separation={self.wheel_separation}'
+        )
+
+    # ----------------------------
+    def apply_rover_parameters(self):
+        prefix = f'{self.rover}.'
+        params = self._parameters
+
+        def get_param(name, default):
+            full = prefix + name
+            if full in params:
+                return params[full].value
+            return default
+
+        wr = get_param('wheel_radius', self.wheel_radius)
+        ws = get_param('wheel_separation', self.wheel_separation)
+
+        self.set_parameters([
+            Parameter('wheel_radius', Parameter.Type.DOUBLE, wr),
+            Parameter('wheel_separation', Parameter.Type.DOUBLE, ws),
+        ])
+
+        self.wheel_radius = wr
+        self.wheel_separation = ws
+
+    # ----------------------------
+    def on_twist(self, msg: Twist):
+        self.last_twist = msg
+
+    # ----------------------------
+    def on_timer(self):
+        v = float(self.last_twist.linear.x)
+        w = float(self.last_twist.angular.z)
+
+        # Differential drive kinematics
+        # v_l = v - (w * L / 2)
+        # v_r = v + (w * L / 2)
+        v_l = v - (w * self.wheel_separation * 0.5)
+        v_r = v + (w * self.wheel_separation * 0.5)
+
+        if self.wheel_radius > 0.0:
+            w_l = v_l / self.wheel_radius
+            w_r = v_r / self.wheel_radius
+        else:
+            w_l = 0.0
+            w_r = 0.0
+
+        msg = Float64MultiArray()
+        # Joint order: [left, right]
+        msg.data = [w_l, w_r]
+
+        self.pub.publish(msg)
 
 
 def main():
     rclpy.init()
     node = RoverTwistRelay()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':

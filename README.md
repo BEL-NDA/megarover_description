@@ -18,12 +18,12 @@ git clone -b $ROS_DISTRO https://github.com/vstoneofficial/vs_rover_options_desc
 
 ### メガローバーVer 3.0の場合は
 ```bash
-ros2 launch megarover_description mega3_view.launch.py
+ros2 launch megarover_description display.launch.py rover:=mega3
 ```
 ![](images/mega3_description.png)
 
 ### メガローバーF120Aの場合は
 ```bash
-ros2 launch megarover_description f120a_view.launch.py
+ros2 launch megarover_description display.launch.py rover:=f120a
 ```
 ![](images/f120a_description.png)

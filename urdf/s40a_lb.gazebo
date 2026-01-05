@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<robot name="s40a_lb" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="body_color"  value="Gazebo/Silver"/>
+  <xacro:property name="wheel_color" value="Gazebo/DarkGrey"/>
+  
+  <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+      <parameters>
+        $(find megarover_description)/params/controllers.yaml
+      </parameters>
+    </plugin>
+  </gazebo>
+
+
+<!-- Link macros -->
+  <xacro:macro name="gazebo_base_link" params="ref">
+    <gazebo reference="${ref}">
+      <material>${body_color}</material>
+      <mu1>0.6</mu1>
+      <mu2>0.6</mu2>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_sus_link" params="ref">
+    <gazebo reference="${ref}">
+      <material>${body_color}</material>
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_drive_wheel" params="ref">
+    <gazebo reference="${ref}">
+      <material>${wheel_color}</material>
+      <mu1>1.5</mu1>
+      <mu2>0.6</mu2>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_caster_sus_link" params="ref">
+    <gazebo reference="${ref}">
+      <material>${body_color}</material>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_caster_frame_link" params="ref">
+    <gazebo reference="${ref}">
+      <material>${body_color}</material>
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_caster_wheel" params="ref">
+    <gazebo reference="${ref}">
+      <material>${wheel_color}</material>
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+    </gazebo>
+  </xacro:macro>
+
+<!-- Joint macros -->
+  <xacro:macro name="gazebo_drive_sus_joint" params="ref">
+    <gazebo reference="${ref}">
+      <implicitSpringDamper>true</implicitSpringDamper>
+      <springReference>0.006</springReference>
+      <springStiffness>28000</springStiffness>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_caster_sus_joint" params="ref">
+    <gazebo reference="${ref}">
+      <implicitSpringDamper>true</implicitSpringDamper>
+      <springReference>0.006</springReference>
+      <springStiffness>12070</springStiffness>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_caster_steering_joint" params="ref">
+    <gazebo reference="${ref}">
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_caster_wheel_joint" params="ref">
+    <gazebo reference="${ref}">
+    </gazebo>
+  </xacro:macro>
+
+
+  <!-- Link instances -->
+  <xacro:gazebo_base_link		ref="base_link"/>
+  <xacro:gazebo_sus_link 		ref="left_sus"/>
+  <xacro:gazebo_sus_link 		ref="right_sus"/>
+  <xacro:gazebo_drive_wheel 		ref="left_wheel_1"/>
+  <xacro:gazebo_drive_wheel		ref="right_wheel_1"/>
+  <xacro:gazebo_caster_sus_link		ref="front_left_caster_sus"/>
+  <xacro:gazebo_caster_sus_link 	ref="front_right_caster_sus"/>
+  <xacro:gazebo_caster_sus_link 	ref="back_left_caster_sus"/>
+  <xacro:gazebo_caster_sus_link		ref="back_right_caster_sus"/>
+  <xacro:gazebo_caster_frame_link	ref="front_left_caster_frame"/>
+  <xacro:gazebo_caster_frame_link	ref="front_right_caster_frame"/>
+  <xacro:gazebo_caster_frame_link	ref="back_left_caster_frame"/>
+  <xacro:gazebo_caster_frame_link	ref="back_right_caster_frame"/>
+  <xacro:gazebo_caster_wheel		ref="front_left_caster_wheel"/>
+  <xacro:gazebo_caster_wheel		ref="front_right_caster_wheel"/>
+  <xacro:gazebo_caster_wheel 		ref="back_left_caster_wheel"/>
+  <xacro:gazebo_caster_wheel 		ref="back_right_caster_wheel"/>
+
+  <!-- Joint instances -->
+  <xacro:gazebo_drive_sus_joint		ref="left_sus_joint"/>
+  <xacro:gazebo_drive_sus_joint		ref="right_sus_joint"/>
+  <xacro:gazebo_caster_sus_joint	ref="front_left_caster_sus_joint"/>
+  <xacro:gazebo_caster_sus_joint	ref="front_right_caster_sus_joint"/>
+  <xacro:gazebo_caster_sus_joint	ref="back_left_caster_sus_joint"/>
+  <xacro:gazebo_caster_sus_joint	ref="back_right_caster_sus_joint"/>
+  <xacro:gazebo_caster_steering_joint	ref="front_left_caster_steering_joint"/>
+  <xacro:gazebo_caster_steering_joint	ref="front_right_caster_steering_joint"/>
+  <xacro:gazebo_caster_steering_joint	ref="back_left_caster_steering_joint"/>
+  <xacro:gazebo_caster_steering_joint	ref="back_right_caster_steering_joint"/>
+  <xacro:gazebo_caster_wheel_joint	ref="front_left_caster_wheel_joint"/>
+  <xacro:gazebo_caster_wheel_joint	ref="front_right_caster_wheel_joint"/>
+  <xacro:gazebo_caster_wheel_joint	ref="back_left_caster_wheel_joint"/>
+  <xacro:gazebo_caster_wheel_joint	ref="back_right_caster_wheel_joint"/>
+
+</robot>
+

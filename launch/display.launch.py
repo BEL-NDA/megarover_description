@@ -24,15 +24,17 @@ def generate_launch_description():
     # Select xacro and rviz by rover type
     # --------------------------------------------------
     model_file = PythonExpression([
-        '"', desc_pkg, '/urdf/',
-        '" + ("mega3.xacro" if "', rover,
-        '" == "mega3" else "f120a.xacro")'
+        '"', desc_pkg, '/urdf/" + (',
+        '"mega3.xacro" if "', rover, '" == "mega3" else ',
+        '"s40a_lb.xacro" if "', rover, '" == "s40a_lb" else ',
+        '"f120a.xacro")'
     ])
 
     rviz_file = PythonExpression([
-        '"', desc_pkg, '/rviz/',
-        '" + ("mega3.rviz" if "', rover,
-        '" == "mega3" else "f120a.rviz")'
+        '"', desc_pkg, '/rviz/" + (',
+        '"mega3.rviz" if "', rover, '" == "mega3" else ',
+        '"s40a_lb.rviz" if "', rover, '" == "s40a_lb" else ',
+        '"f120a.rviz")'
     ])
 
     # --------------------------------------------------
@@ -82,7 +84,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'rover',
             default_value='mega3',
-            description='Rover type: mega3 or f120a'
+            description='Rover type: mega3 | f120a | s40a_lb'
         ),
 
         DeclareLaunchArgument(

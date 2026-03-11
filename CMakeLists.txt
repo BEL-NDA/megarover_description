@@ -3,16 +3,14 @@ project(megarover_description)
 
 find_package(ament_cmake REQUIRED)
 
-message(STATUS ">>> Installing rover_twist_relay.py into lib/${PROJECT_NAME}")
-
 install(
   PROGRAMS
-    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/rover_twist_relay.py
+    ${CMAKE_CURRENT_SOURCE_DIR}/params/rover_twist_relay.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
-  DIRECTORY launch meshes rviz urdf params scripts
+  DIRECTORY launch meshes rviz urdf params
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -22,4 +20,3 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
-

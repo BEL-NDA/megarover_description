@@ -6,7 +6,7 @@
   <xacro:include filename="$(find megarover_description)/urdf/f120a_ros2_control.xacro" />
 
   <!-- OPTION  LRF TG30 -->
-  <xacro:include filename="$(find vs_rover_options_description)/urdf/lrf/tg30_f120a.xacro" />
+  <!--<xacro:include filename="$(find vs_rover_options_description)/urdf/lrf/tg30_f120a.xacro" />-->
   
   <!-- OPTION  bumper sensor -->
   <!-- <xacro:include filename="$(find vs_rover_options_description)/urdf/bumper/bumper_f120a.xacro" />

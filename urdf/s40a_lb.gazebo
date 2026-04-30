@@ -6,6 +6,8 @@
   
   <gazebo>
     <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+      <robot_param>robot_description</robot_param>
+      <robot_param_node>megarover3_robot_state_publisher</robot_param_node>
       <parameters>
         $(find megarover_description)/params/controllers.yaml
       </parameters>
@@ -89,7 +91,7 @@
 
 
   <!-- Link instances -->
-  <xacro:gazebo_base_link		ref="base_link"/>
+  <xacro:gazebo_base_link		ref="body_link"/>
   <xacro:gazebo_sus_link 		ref="left_sus"/>
   <xacro:gazebo_sus_link 		ref="right_sus"/>
   <xacro:gazebo_drive_wheel 		ref="left_wheel_1"/>

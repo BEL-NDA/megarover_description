@@ -2,22 +2,16 @@
 <robot name="mega3_zed" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:include filename="$(find megarover_description)/urdf/mega3.xacro" />
+  <xacro:include filename="$(find zed_wrapper)/urdf/zed_macro.urdf.xacro" />
 
-  <!-- ZED2i physical mount position (visual indicator only, ZED SDK manages its own frames) -->
-  <link name="zed_mount_link">
-    <visual>
-      <origin xyz="-0.01 0 0.015" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://zed_description/meshes/zed2i.stl"/>
-      </geometry>
-      <material name="zed_dark">
-        <color rgba="0.25 0.25 0.25 1.0"/>
-      </material>
-    </visual>
-  </link>
-  <joint name="zed_mount_joint" type="fixed">
+  <xacro:zed_camera name="zed" model="zed2i">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:zed_camera>
+
+  <!-- 車輪軸から 1.13m 上（base_link から z=1.20m） -->
+  <joint name="zed_camera_joint" type="fixed">
     <parent link="base_link" />
-    <child link="zed_mount_link" />
+    <child link="zed_camera_link" />
     <origin xyz="0 0 1.20" rpy="0 0 0" />
   </joint>
 
